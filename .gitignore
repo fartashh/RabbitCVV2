@@ -27,3 +27,4 @@ out/
 .firebase/
 firebase-debug.log
 firestore-debug.log
+_to_delete/

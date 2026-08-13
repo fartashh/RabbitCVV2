@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Same starting point as firestore.rules — deny by default until a scope
+// (e.g. PDF export, KAN-7) actually needs Storage access, at which point
+// we write rules scoped to that use case.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
