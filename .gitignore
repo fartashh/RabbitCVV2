@@ -1,0 +1,29 @@
+
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build outputs
+dist/
+build/
+.next/
+out/
+
+# turbo
+.turbo/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
