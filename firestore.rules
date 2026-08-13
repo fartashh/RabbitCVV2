@@ -1,12 +1,21 @@
 rules_version = '2';
 
-// Starting point: deny everything by default (matches what Firestore
-// "production mode" already enforces server-side). KAN-3/KAN-4 will add
-// scoped rules for resumes as we build the fields that need them —
-// intentionally not writing speculative rules for data shapes that don't
-// exist in the code yet.
 service cloud.firestore {
   match /databases/{database}/documents {
+    // KAN-3: a resume belongs to exactly one owner (anonymous or real
+    // Firebase Auth user — auth linking in KAN-4 keeps the uid stable
+    // across that transition, so these rules don't need to change for
+    // it). No sharing/public read in this cycle (see the pitch's
+    // no-gos) — every operation requires the caller to *be* the owner.
+    match /resumes/{resumeId} {
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.ownerId;
+      allow read, update, delete: if request.auth != null
+        && request.auth.uid == resource.data.ownerId;
+    }
+
+    // Deny-by-default for everything else, same as before — rules get
+    // added here only when a ticket actually needs that data access.
     match /{document=**} {
       allow read, write: if false;
     }
