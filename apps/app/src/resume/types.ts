@@ -54,6 +54,14 @@ export interface Resume {
 
 export const emptyRichText: RichText = [{ type: "paragraph", children: [{ text: "" }] }];
 
+/** KAN-4: the account-creation prompt only makes sense once there's
+ * something worth not losing. "Meaningful" is deliberately loose — a name
+ * or a first experience entry — rather than trying to score resume
+ * completeness. */
+export function hasMeaningfulContent(resume: Resume): boolean {
+  return Boolean(resume.contact.name.trim()) || resume.experience.length > 0;
+}
+
 export function createBlankResume(ownerId: string, label = "My Resume"): Omit<Resume, "id"> {
   const now = Date.now();
   return {

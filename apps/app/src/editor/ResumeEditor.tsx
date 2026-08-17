@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useGuestSession } from "../auth/GuestSessionProvider";
+import { AccountPrompt } from "../auth/AccountPrompt";
 import { subscribeToPrimaryResume, updateResume } from "../resume/service";
-import type { Resume } from "../resume/types";
+import { hasMeaningfulContent, type Resume } from "../resume/types";
 import { useAutosave } from "./useAutosave";
 import { ContactSection } from "./sections/ContactSection";
 import { SummarySection } from "./sections/SummarySection";
@@ -76,6 +77,11 @@ export function ResumeEditor() {
     return <p style={{ padding: 24 }}>Loading your resume…</p>;
   }
 
+  // KAN-4: nudge guests to create an account once there's something worth
+  // not losing. Once the session is a real (non-anonymous) account, the
+  // prompt never renders again — nothing to convert.
+  const showAccountPrompt = Boolean(user?.isAnonymous) && hasMeaningfulContent(resume);
+
   return (
     <div className="resume-editor">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
@@ -84,6 +90,8 @@ export function ResumeEditor() {
           {status === "saving" ? "Saving…" : status === "saved" ? "Saved" : ""}
         </span>
       </div>
+
+      <AccountPrompt visible={showAccountPrompt} />
 
       <ContactSection value={resume.contact} onChange={(contact) => patch({ contact })} />
       <SummarySection value={resume.summary} onChange={(summary) => patch({ summary })} />
